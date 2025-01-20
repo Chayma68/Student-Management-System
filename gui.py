@@ -3,14 +3,49 @@ import tkinter as tk
 from tkinter import messagebox
 from tkinter import ttk  # Table functionality
 import matplotlib.pyplot as plt
-
+from ttkthemes import ThemedTk
 
 sort_order = "desc"
 
 # Main window
-root = tk.Tk()
+root = ThemedTk(theme="arc")
 root.title("Student Management System")
-root.geometry("500x800")
+root.geometry("650x600")
+
+style = ttk.Style()
+style.configure("TButton", font=("Arial", 12), padding=6)
+style.configure("TLabel", font=("Arial", 12))
+style.configure("TEntry", font=("Arial", 12))
+
+#Frame: Buttons
+button_frame = ttk.Frame(root, padding=10)
+button_frame.pack()
+
+ttk.Button(button_frame, text="Add Student", command=lambda: handle_add_student()).grid(row=0, column=0, padx=5, pady=5)
+ttk.Button(button_frame, text="Edit Student", command=lambda: handle_edit_student()).grid(row=0, column=1, padx=5,
+                                                                                          pady=5)
+ttk.Button(button_frame, text="Delete Student", command=lambda: handle_delete_student()).grid(row=0, column=2, padx=5,
+                                                                                              pady=5)
+ttk.Button(button_frame, text="Sort Students", command=lambda: sort_order).grid(row=0, column=3, padx=5, pady=5)
+ttk.Button(button_frame, text="Export CSV", command=lambda: handle_export).grid(row=0, column=4, padx=5, pady=5)
+
+#Frame:  statistics
+
+stats_frame = ttk.Frame(root, padding=10)
+stats_frame.pack()
+
+class_avg_label = ttk.Label(stats_frame, text="Class Average: N/A", font=("Arial", 12))
+class_avg_label.grid(row=0, column=0, padx=10)
+
+top_student_label = ttk.Label(stats_frame, text="Top Student: N/A", font=("Arial", 12))
+top_student_label.grid(row=0, column=1, padx=10)
+
+lowest_student_label = ttk.Label(stats_frame, text="Lowest Performer: N/A", font=("Arial", 12))
+lowest_student_label.grid(row=0, column=2, padx=10)
+
+#Frame : student Table
+table_frame = ttk.Frame(root, padding=10)
+table_frame.pack(fill="both", expand=True)
 
 
 # Function to handle adding a new student
@@ -18,26 +53,34 @@ def handle_add_student():
     add_window = tk.Toplevel(root)
     add_window.title(f"Add New Student")
     add_window.geometry("300x300")
+    add_window.configure(bg="#edd5e4")
 
-    tk.Label(add_window, text="Name:").pack()
-    name_entry = tk.Entry(add_window)
-    name_entry.pack()
 
-    tk.Label(add_window, text="Math:").pack()
-    math_entry = tk.Entry(add_window)
-    math_entry.pack()
+    style = ttk.Style()
+    style.configure("Custom.TFrame", background="#edd5e4")
 
-    tk.Label(add_window, text="Physiqaue:").pack()
-    physique_entry = tk.Entry(add_window)
-    physique_entry.pack()
+    frame = ttk.Frame(add_window, padding=10, style="Custom.TFrame")
+    frame.pack(expand=True, fill="both")
 
-    tk.Label(add_window, text="Philosophie:").pack()
-    philo_entry = tk.Entry(add_window)
-    philo_entry.pack()
+    ttk.Label(frame, text="Name:", background="#edd5e4").grid(row=0, column=0, padx=5, pady=5, sticky="w")
+    name_entry = ttk.Entry(frame)
+    name_entry.grid(row=0, column=1, padx=5, pady=5)
 
-    tk.Label(add_window, text="English:").pack()
-    english_entry = tk.Entry(add_window)
-    english_entry.pack()
+    ttk.Label(frame, text="Math:", background="#edd5e4").grid(row=1, column=0, padx=5, pady=5, sticky="w")
+    math_entry = ttk.Entry(frame)
+    math_entry.grid(row=1, column=1, padx=5, pady=5)
+
+    ttk.Label(frame, text="Physique:", background="#edd5e4").grid(row=2, column=0, padx=5, pady=5, sticky="w")
+    physique_entry = ttk.Entry(frame)
+    physique_entry.grid(row=2, column=1, padx=5, pady=5)
+
+    ttk.Label(frame, text="Philosophie:", background="#edd5e4").grid(row=3, column=0, padx=5, pady=5, sticky="w")
+    philo_entry = ttk.Entry(frame)
+    philo_entry.grid(row=3, column=1, padx=5, pady=5)
+
+    ttk.Label(frame, text="English:", background="#edd5e4").grid(row=4, column=0, padx=5, pady=5, sticky="w")
+    english_entry = ttk.Entry(frame)
+    english_entry.grid(row=4, column=1, padx=5, pady=5)
 
     def confirm():
 
@@ -58,13 +101,12 @@ def handle_add_student():
             backend.add_student(name, math, physique, philo, english)
             update_student_list()
             messagebox.showinfo("Success", "Student added successfully!")
+            add_window.destroy()
         except ValueError:
             messagebox.showerror("Error", "Please enter valid numeric scores between 0 and 20.")
 
-    tk.Button(add_window, text="Confirm", command=confirm).pack(pady=5)
-
-
-tk.Button(root, text="Add student", command=handle_add_student).pack(pady=5)
+    confirm_button = ttk.Button(frame, text="Confirm", command=confirm, style="Accent.TButton")
+    confirm_button.grid(row=6, column=1, columnspan=2, pady=10, sticky="ew")
 
 
 #Function to handle delete
@@ -79,9 +121,6 @@ def handle_delete_student():
     messagebox.showinfo("success", f"Deleted {student_name} successfully")
 
 
-tk.Button(root, text="Delete Student", command=handle_delete_student).pack(pady=5)
-
-
 def handle_edit_student():
     selected_item = tree.selection()
     if not selected_item:
@@ -92,32 +131,39 @@ def handle_edit_student():
     edit_window = tk.Toplevel(root)
     edit_window.title(f"Edit {student_name}")
     edit_window.geometry("300x300")
+    edit_window.configure(bg="#edd5e4")  #e3f2fd baby blue
+
+    style = ttk.Style()
+    style.configure("Custom.TFrame", background="#edd5e4")
+
+    frame = ttk.Frame(edit_window, style="Custom.TFrame", padding=10)
+    frame.pack(expand=True, fill="both")
 
     #labels and entry fields for scores
-    tk.Label(edit_window, text="Name:").pack()
-    name_entry = tk.Entry(edit_window)
+    ttk.Label(frame, text="Name:", background="#edd5e4").grid(row=0, column=0, padx=5, pady=5, sticky="w")
+    name_entry = ttk.Entry(frame)
     name_entry.insert(0, student_data["name"])
-    name_entry.pack()
+    name_entry.grid(row=0, column=1, padx=5, pady=5)
 
-    tk.Label(edit_window, text="Math:").pack()
-    math_entry = tk.Entry(edit_window)
+    ttk.Label(frame, text="Math:", background="#edd5e4").grid(row=1, column=0, padx=5, pady=5, sticky="w")
+    math_entry = ttk.Entry(frame)
     math_entry.insert(0, student_data["math"])
-    math_entry.pack()
+    math_entry.grid(row=1, column=1, padx=5, pady=5)
 
-    tk.Label(edit_window, text="Physique:").pack()
-    physique_entry = tk.Entry(edit_window)
+    ttk.Label(frame, text="Physique:",background="#edd5e4").grid(row=2, column=0, padx=5, pady=5, sticky="w")
+    physique_entry = ttk.Entry(frame)
     physique_entry.insert(0, student_data["physique"])
-    physique_entry.pack()
+    physique_entry.grid(row=2, column=1, padx=5, pady=5)
 
-    tk.Label(edit_window, text="Philosophie:").pack()
-    philo_entry = tk.Entry(edit_window)
+    ttk.Label(frame, text="Philosophie:",background="#edd5e4").grid(row=3, column=0, padx=5, pady=5, sticky="w")
+    philo_entry = ttk.Entry(frame)
     philo_entry.insert(0, student_data["philosophie"])
-    philo_entry.pack()
+    philo_entry.grid(row=3, column=1, padx=5, pady=5)
 
-    tk.Label(edit_window, text="English:").pack()
-    english_entry = tk.Entry(edit_window)
+    ttk.Label(frame, text="English:",background="#edd5e4").grid(row=4, column=0, padx=5, pady=5, sticky="w")
+    english_entry = ttk.Entry(frame)
     english_entry.insert(0, student_data["english"])
-    english_entry.pack()
+    english_entry.grid(row=4, column=1, padx=5, pady=5)
 
     def save_changes():
         try:
@@ -136,11 +182,13 @@ def handle_edit_student():
             messagebox.showinfo("Success", f"Updated {student_name} successfully!")
         except ValueError:
             messagebox.showerror("Error", "Please enter valid numeric scores between 0 and 20.")
-
-    tk.Button(edit_window, text="Save changes", command=save_changes).pack(pady=10)
-
-
-tk.Button(root, text="Edit Student", command=handle_edit_student).pack(pady=5)
+    style = ttk.Style()
+    style.configure("TButton", font=("Arial", 12), padding=6)
+    style.configure("Accent.TButton", background="#edd5e4",font=("Arial", 12, "bold"))
+    style.map("Accent.TButton", background=[("active", "#e892e8")])
+    ttk.Button(frame, text="Save Changes", style="Accent.TButton", command=save_changes).grid(
+        row=5, column=1, columnspan=3, pady=10, padx=10, sticky="ew"
+    )
 
 
 # Function to update student list in the GUI
@@ -152,6 +200,7 @@ def update_student_list():
         grade = backend.assign_grade(avg)
         tree.insert("", "end", values=(student["name"], f"{avg:.2f}", grade))
     update_statistics()
+
 
 # Function to sort students by average
 def sort_student():
@@ -166,12 +215,10 @@ def sort_student():
     update_student_list()
 
 
-tk.Button(root, text="Sort by Average (Toggle)", command=sort_student).pack(pady=5)
-
 def handle_export():
-    filename="students_export.csv"
+    filename = "students_export.csv"
     backend.export_to_csv(filename)
-    messagebox.showinfo("Success",f"Student data exported to {filename}!")
+    messagebox.showinfo("Success", f"Student data exported to {filename}!")
 
 
 def show_reports():
@@ -196,8 +243,9 @@ def show_reports():
     plt.tight_layout()
     plt.show()
 
+
 def update_statistics():
-    class_avg=backend.calculate_calss_average()
+    class_avg = backend.calculate_calss_average()
     top_student = backend.find_top_student()
     lowest_student = backend.find_lowest_student()
 
@@ -211,28 +259,20 @@ def update_statistics():
             text=f"Lowest Performer: {lowest_student['name']} ({backend.calculate_avg(lowest_student):.2f})")
     else:
         lowest_student_label.config(text="Lowest Performer: N/A")
-tk.Button(root, text="Export to CSV", command=handle_export).pack(pady=5)
-tk.Button(root, text="Show Reports", command=show_reports).pack(pady=5)
-
-
-class_avg_label = tk.Label(root, text="Class Average: N/A", font=("Arial", 12))
-class_avg_label.pack()
-
-top_student_label = tk.Label(root, text="Top Student: N/A", font=("Arial", 12))
-top_student_label.pack()
-
-lowest_student_label = tk.Label(root, text="Lowest Performer: N/A", font=("Arial", 12))
-lowest_student_label.pack()
 
 
 # Student Table
 columns = ("Name", "Average", "Grade")
-tree = ttk.Treeview(root, columns=columns, show="headings")
+tree = ttk.Treeview(table_frame, columns=columns, show="headings", height=8)
 for col in columns:
-    tree.heading(col, text=col)
-    tree.column(col, width=150)
-tree.pack()
+    tree.heading(col, text=col, anchor="center")
+    tree.column(col, width=150, anchor="center")
 
+scrollbar = ttk.Scrollbar(table_frame, orient="vertical", command=tree.yview)
+tree.configure(yscroll=scrollbar.set)
+scrollbar.pack(side="right", fill="y")
+
+tree.pack(fill="both", expand=True)
 
 # Load students from CSV and display them in the table
 backend.load_students()
